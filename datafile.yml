@@ -1,0 +1,40 @@
+last-opened:
+  input-dir: "C:/Users/jovanni/Desktop/electric-angel-parts"
+  output-dir: "C:/Users/jovanni/Desktop/electric-angel-parts-2"
+
+settings:
+  use-last-opened: true
+
+markers:
+  sentence-end: ["."]
+  exclamation: ["?", "!"]
+  punctuation: [",", ";", ":", "…"]
+  speech: ["“", "”"]
+  misc: ['"', "'", "’", '*']
+
+cleaner-replace:
+  - ["—", " -- "]
+  - ["-- ”", "--.”"]
+  - [". . . .", "…."]
+  - ['. . .', '…']
+  - ['....', '….']
+  - ['...', '…']
+  - [' …', '…']
+  - ["… ”", "….”"]
+  - ["…”", "….”"]
+  - ['?', '?.']
+  - ['!', '!.']
+  - ['.,', ',']
+  # remove redundancy
+  - ['..', '.']
+  - ['  ', ' ']
+#  - ['*.', '.*']
+#  - ["“*", "*“"]
+#  - ["*”", "”*"]
+cleaner-special-strings: []
+
+titles: ['Mr', 'Ms', 'Mrs', 'Dr']
+
+name-finder-debug: False
+
+use-cli: True
