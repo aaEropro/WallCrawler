@@ -4,7 +4,7 @@ import sys
 from mailman.settings import Settings
 from mailman.temp_manager import TempMan
 import os
-from dataclass.structure import Structure
+from processor.structure import Structure
 
 
 class LineEdit(QLineEdit):

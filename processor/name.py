@@ -1,4 +1,4 @@
-from dataclass.cleaner import strip_word, clean_word
+from processor.cleaner import strip_word, clean_word
 
 
 def _extend_name(name: str) -> str:
@@ -19,6 +19,8 @@ def _word_is_name(word: str, names: list) -> str:
     word_copy = strip_word(word_copy)
 
     if word_copy == "I" or word_copy.startswith("I’"):
+        return word
+    if word.isupper():
         return word
     if word_copy not in names:
         return word.lower()

@@ -1,9 +1,14 @@
 last-opened:
-  input-dir: "C:/Users/jovanni/Desktop/electric-angel-parts"
-  output-dir: "C:/Users/jovanni/Desktop/electric-angel-parts-2"
+  input-dir: "C:/Users/jovanni/Desktop/tiamats-wrath/OEBPS/Text"
+  output-dir: "C:/Users/jovanni/Desktop/tiamats-wrath-2"
 
+# GENERAL SETTINGS
 settings:
-  use-last-opened: true
+  use-cli: True
+  use-last-opened: True
+  # select the read target file type. it will influence the processing pipeline
+  mode: "epub"
+#  mode: "txt"
 
 markers:
   sentence-end: ["."]
@@ -22,8 +27,8 @@ cleaner-replace:
   - [' …', '…']
   - ["… ”", "….”"]
   - ["…”", "….”"]
-  - ['?', '?.']
-  - ['!', '!.']
+#  - ['?', '?.']
+#  - ['!', '!.']
   - ['.,', ',']
   # remove redundancy
   - ['..', '.']
@@ -32,9 +37,23 @@ cleaner-replace:
 #  - ["“*", "*“"]
 #  - ["*”", "”*"]
 cleaner-special-strings: []
-
 titles: ['Mr', 'Ms', 'Mrs', 'Dr']
 
 name-finder-debug: False
 
-use-cli: True
+
+
+# CONTENT AWARE MODULE
+context-aware:
+  awareness-threshold: 3
+  target-terms:
+    - "said"
+    - "asked"
+    - "answered"
+    - "shouted"
+
+# EPUB SCRAPING SETTINGS
+current-stylesheet:
+  italic: ["italic", "calibre2"]
+  bold: ["bold", "h", "calibre10"]
+  bold-italic: ["bolditalic"]

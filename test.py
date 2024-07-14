@@ -1,20 +1,26 @@
+from bs4 import BeautifulSoup
 
+# Load your HTML content
+with open(r"C:\Users\jovanni\Desktop\electric-angel\text\part0006_split_001.html", 'r', encoding='utf-8') as file:
+    html_content = file.read()
 
+# Parse the HTML content using BeautifulSoup
+soup = BeautifulSoup(html_content, 'lxml')
 
-def _insert_tags(word:str) -> str:
-    lenght = len(word)
-    index = 0
-    while (word[lenght-1-index] in ['*', '"', '”', "'", ',', '?', '!', ':', ';', '…', '.']):
-        index += 1
-    word = f'{word[:lenght-index]}</ft>{word[lenght-index:]}'
+# Function to transform italic tags to plaintext with asterisks
+def transform_italic_tags(soup):
+    for tag in soup.find_all(True):  # Find all tags
+        if 'class' in tag.attrs and 'italic' in tag['class']:
+            tag.replace_with(f"*{tag.get_text()}*")  # Replace with asterisks-wrapped text
+        else:
+            tag.unwrap()  # Remove the tag but keep its content
 
-    index = 0
-    while (word[index] in ['*', '"', '”', "'", ',', '?', '!', ':', ';', '…', '.']):
-        index += 1
-    word = f'{word[:index]}<ft>{word[index:]}'
+# Apply the function to the soup
+transform_italic_tags(soup)
 
-    return word
+# Get the modified HTML
+modified_html = str(soup)
 
-
-
-print(_insert_tags('"text"'))
+# Save the modified HTML to a new file
+with open(r"C:\Users\jovanni\Desktop\electric-angel-2\part0005_split_001.html", 'w', encoding='utf-8') as file:
+    file.write(modified_html)

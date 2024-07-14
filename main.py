@@ -2,53 +2,88 @@ import shutil
 import os
 import sys
 
-from dataclass.name import detect_names, lowercase_non_names
-from dataclass.cleaner import sanitize_text
+from processor.name import detect_names, lowercase_non_names
+from processor.cleaner import sanitize_text
+from processor.epub import process_html
+from processor.context_aware import analyze_context
 from mailman.settings import Settings
 
 
-def run(input_path: str, output_path: str, filename: str):
+def run(content: str) -> str:
     """
     runs each file through the process.
-    :param input_path: input directory.
-    :param output_path: output directory.
-    :param filename: current file name.
-    :return: None.
+    :param content: plain text content for processing.
+    :return: processed content.
     """
-
-    with open(os.path.join(input_path, filename), 'r', encoding='utf8') as file:
-        content = file.read()
-
     content = sanitize_text(content)
     tagged_content, names = detect_names(content)
     content = lowercase_non_names(content, names)
+    content = analyze_context(content)
 
-    with open(os.path.join(output_path, filename), 'w', encoding='utf8') as file:
-        file.write(content)
+    return content
+
+
+def txt_mode(input_dir: str, output_dir: str):
+    for current_dir, _, files_list in os.walk(input_dir):
+        for file_name in files_list:
+            input_file_path = os.path.join(current_dir, file_name)
+            output_file_path = os.path.join(output_dir, file_name)
+
+            if file_name.endswith('.txt'):
+                with open(input_file_path, mode="r", encoding="utf-8") as file:
+                    content = file.read()
+                content = run(content)
+                with open(output_file_path, mode="w", encoding="utf-8") as file:
+                    file.write(content)
+            else:
+                shutil.copyfile(input_file_path, output_file_path)
+
+
+def epub_mode(input_dir: str, output_dir: str):
+
+    for current_dir, _, files_list in os.walk(input_dir):
+        for file_name in files_list:
+
+            if not file_name.endswith("html"):
+                continue
+
+            input_file_path = os.path.join(current_dir, file_name)
+            with open(input_file_path, mode="r", encoding="utf-8") as file:
+                content = file.read()
+
+            content = process_html(content)
+            content = content.replace("\n", "\n\n")
+            content = run(content)
+
+            output_file_path = os.path.join(output_dir, file_name[:-4]+"txt")
+            with open(output_file_path, mode="w", encoding="utf-8") as file:
+                file.write(content)
 
 
 if __name__ == '__main__':
     settings_instance = Settings()
 
     # get the input and output folders
-    input_folder = Settings().get("last-opened", 'input-dir')
-    output_folder = Settings().get("last-opened", 'output-dir')
+    input_dir = Settings().get("last-opened", "input-dir")
+    output_dir = Settings().get("last-opened", "output-dir")
     # convert forward slashes to backward slashes
-    input_folder = str(os.path.normpath(input_folder))
-    output_folder = str(os.path.normpath(output_folder))
-    if input_folder is None or output_folder is None:
+    input_dir = str(os.path.normpath(input_dir))
+    output_dir = str(os.path.normpath(output_dir))
+    if input_dir is None or output_dir is None:
         print("either input or output folder is missing.")
         sys.exit()
 
-    if not os.path.isdir(input_folder):
-        print('input directory error.')
+    # verify specified directories exist
+    if not os.path.isdir(input_dir):
+        print("input directory error.")
         sys.exit()
-    if not os.path.isdir(output_folder):
-        os.mkdir(output_folder)
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
 
-    for path, directories, files in os.walk(input_folder):
-        for item in files:
-            if item.endswith('.txt'):
-                run(path, output_folder, item)
-            else:
-                shutil.copyfile(os.path.join(path, item), os.path.join(output_folder, item))
+    # mode bypasses
+    if Settings().get("settings", "mode") == "epub":
+        epub_mode(input_dir, output_dir)
+    if Settings().get("settings", "mode") == "txt":
+        txt_mode(input_dir, output_dir)
+
+
