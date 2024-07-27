@@ -1,6 +1,11 @@
 last-opened:
-  input-dir: "C:/Users/jovanni/Desktop/tiamats-wrath/OEBPS/Text"
-  output-dir: "C:/Users/jovanni/Desktop/tiamats-wrath-2"
+  input-dir: "C:/Users/jovanni/Desktop/input"
+
+  output-dir: "C:/Users/jovanni/Desktop/output"
+
+  # used for exporting the unmodified files, with the html tags removed
+  intermediate-dir: "C:/Users/jovanni/Desktop/intermediate"
+
 
 # GENERAL SETTINGS
 settings:
@@ -9,6 +14,16 @@ settings:
   # select the read target file type. it will influence the processing pipeline
   mode: "epub"
 #  mode: "txt"
+
+  # export files after removing html tags. works only with `epub` mode
+  export-intermediate: True
+
+
+false-positives:
+  ignore:
+    - "the"
+    - "a"
+
 
 markers:
   sentence-end: ["."]
@@ -54,6 +69,6 @@ context-aware:
 
 # EPUB SCRAPING SETTINGS
 current-stylesheet:
-  italic: ["italic", "calibre2"]
-  bold: ["bold", "h", "calibre10"]
+  italic: ["italic", "calibre3"]
+  bold: ["bold", "preface-title", "toc-title", "calibre8", "chapter-number"]
   bold-italic: ["bolditalic"]

@@ -120,7 +120,7 @@ def detect_names(text: str) -> [str, list]:
 
             if index != 0 and _is_name(word, line_words[index-1]):
                 # mark the found word with HTML tags
-                line_words[index] = _insert_tags(word)
+                # line_words[index] = _insert_tags(word)
                 # add the name to the list
                 word = strip_word(word)
                 names_set.add(word)

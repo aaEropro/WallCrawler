@@ -6,6 +6,7 @@ from processor.name import detect_names, lowercase_non_names
 from processor.cleaner import sanitize_text
 from processor.epub import process_html
 from processor.context_aware import analyze_context
+from processor.false_positives import ignore_false_positives
 from mailman.settings import Settings
 
 
@@ -18,6 +19,7 @@ def run(content: str) -> str:
     content = sanitize_text(content)
     tagged_content, names = detect_names(content)
     content = lowercase_non_names(content, names)
+    content = ignore_false_positives(content)
     content = analyze_context(content)
 
     return content
@@ -40,6 +42,10 @@ def txt_mode(input_dir: str, output_dir: str):
 
 
 def epub_mode(input_dir: str, output_dir: str):
+    export_intermediate = Settings().get("settings", "export-intermediate")
+    intermediate_dir = Settings().get("last-opened", "intermediate-dir")
+    if export_intermediate and not os.path.isdir(intermediate_dir):
+        os.mkdir(intermediate_dir)
 
     for current_dir, _, files_list in os.walk(input_dir):
         for file_name in files_list:
@@ -53,9 +59,15 @@ def epub_mode(input_dir: str, output_dir: str):
 
             content = process_html(content)
             content = content.replace("\n", "\n\n")
+
+            if export_intermediate:
+                intermediate_file_path = os.path.join(intermediate_dir, file_name[:-4]+"md")
+                with open(intermediate_file_path, mode="w", encoding="utf-8") as file:
+                    file.write(content)
+
             content = run(content)
 
-            output_file_path = os.path.join(output_dir, file_name[:-4]+"txt")
+            output_file_path = os.path.join(output_dir, file_name[:-4]+"md")
             with open(output_file_path, mode="w", encoding="utf-8") as file:
                 file.write(content)
 
