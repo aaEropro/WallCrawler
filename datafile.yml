@@ -69,6 +69,6 @@ context-aware:
 
 # EPUB SCRAPING SETTINGS
 current-stylesheet:
-  italic: ["italic", "calibre3"]
-  bold: ["bold", "preface-title", "toc-title", "calibre8", "chapter-number"]
-  bold-italic: ["bolditalic"]
+  italic: ["italic", "publish1", "books_mu", "i"]
+  bold: ["bold", "head_m", "head_mu", "head_mun", "num_m", "books", "b", "orbitron-bold", "num_s", "head_s", "fmh3aa", "fmh3bb"]
+  bold-italic: ["bolditalic", "andada_boldit"]
