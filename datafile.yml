@@ -1,10 +1,10 @@
 last-opened:
-  input-dir: "C:/Users/jovanni/Desktop/input"
+  input-dir: "input"
 
-  output-dir: "C:/Users/jovanni/Desktop/output"
+  output-dir: "output"
 
   # used for exporting the unmodified files, with the html tags removed
-  intermediate-dir: "C:/Users/jovanni/Desktop/intermediate"
+  intermediate-dir: "intermediate"
 
 
 # GENERAL SETTINGS

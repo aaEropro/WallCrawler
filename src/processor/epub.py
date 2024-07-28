@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
-import os
 
-from mailman.settings import Settings
+from src.mailman.settings import Settings
 
 
 def _replace_tags(tag, italic_classes: list, bold_classes: list, bolditalic_classes: list) -> bool:

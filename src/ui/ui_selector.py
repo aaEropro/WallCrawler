@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
 import sys
-from mailman.settings import Settings
-from mailman.temp_manager import TempMan
+from src.mailman.settings import Settings
+from src.mailman.temp_manager import TempMan
 import os
-from processor.structure import Structure
+from src.processor.structure import Structure
 
 
 class LineEdit(QLineEdit):

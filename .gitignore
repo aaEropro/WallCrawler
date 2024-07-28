@@ -1,3 +1,7 @@
+input/*
+intermediate/*
+output/*
+
 # PyCharm IDE config
 .idea/
 

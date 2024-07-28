@@ -1,4 +1,4 @@
-from processor.cleaner import strip_word, clean_word
+from src.processor.cleaner import strip_word, clean_word
 
 
 def _extend_name(name: str) -> str:

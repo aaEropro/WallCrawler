@@ -1,4 +1,4 @@
-from mailman.settings import Settings
+from src.mailman.settings import Settings
 
 
 def _is_hit(word: str) -> bool:

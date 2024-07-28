@@ -1,5 +1,5 @@
-from mailman.settings import Settings
-from processor.cleaner import clean_word
+from src.mailman.settings import Settings
+from src.processor.cleaner import clean_word
 
 
 def _decide_correct(line: str, false_positives: list) -> str:

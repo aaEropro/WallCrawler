@@ -1,4 +1,4 @@
-from mailman.settings import Settings
+from src.mailman.settings import Settings
 
 
 def _allow_overrides(contents: str) -> str:
