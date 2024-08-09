@@ -1,23 +1,22 @@
-last-opened:
-  input-dir: "input"
+input-dir: "input"                # where are the source files
+output-dir: "output"              # where the processed files will be placed
+export-intermediate: True         # export files after removing html tags; works only with `epub` mode
+intermediate-dir: "intermediate"  # used for exporting the unmodified files, with the tags removed
+mode: "epub"                      # `epub` or `txt`; indicate the type of files that will be read
+name-finder-debug: False          # add a special tag at the first occurrence of a detected name
 
-  output-dir: "output"
+current-stylesheet:       # indicates which tags will be transformed in markdown formatting characters
+  italic: ["italic", "i", "font1"]  # the default tags are "italic" and "i"
+  bold: ["bold", "b", "fm-titlea", "subtitle", "fm-title", "fm-title1", "fm-title2", "chap", "font"]  # the default tags are "bold" and "b"
+  bold-italic: ["bolditalic", "font1"]
 
-  # used for exporting the unmodified files, with the html tags removed
-  intermediate-dir: "intermediate"
-
-
-# GENERAL SETTINGS
-settings:
-  use-cli: True
-  use-last-opened: True
-  # select the read target file type. it will influence the processing pipeline
-  mode: "epub"
-#  mode: "txt"
-
-  # export files after removing html tags. works only with `epub` mode
-  export-intermediate: True
-
+context-aware:            # detects if the sentence ends after `?` or `!`
+  awareness-threshold: 3  # the number of words ahead of the current one that will be checked
+  target-terms:           # terms that indicated the current sentence continues
+    - "said"
+    - "asked"
+    - "shouted"
+    - "answered"
 
 false-positives:
   ignore:
@@ -25,14 +24,7 @@ false-positives:
     - "a"
     - "it"
     - "and"
-
-
-markers:
-  sentence-end: ["."]
-  exclamation: ["?", "!"]
-  punctuation: [",", ";", ":", "…"]
-  speech: ["“", "”"]
-  misc: ['"', "'", "’", '*']
+    - "its"
 
 cleaner-replace:
   - ["—", " -- "]
@@ -44,33 +36,10 @@ cleaner-replace:
   - [' …', '…']
   - ["… ”", "….”"]
   - ["…”", "….”"]
-#  - ['?', '?.']
-#  - ['!', '!.']
-  - ['.,', ',']
   # remove redundancy
   - ['..', '.']
   - ['  ', ' ']
-#  - ['*.', '.*']
-#  - ["“*", "*“"]
-#  - ["*”", "”*"]
+
 cleaner-special-strings: []
 titles: ['Mr', 'Ms', 'Mrs', 'Dr']
 
-name-finder-debug: False
-
-
-
-# CONTENT AWARE MODULE
-context-aware:
-  awareness-threshold: 3
-  target-terms:
-    - "said"
-    - "asked"
-    - "answered"
-    - "shouted"
-
-# EPUB SCRAPING SETTINGS
-current-stylesheet:
-  italic: ["italic", "publish1", "books_mu", "i"]
-  bold: ["bold", "head_m", "head_mu", "head_mun", "num_m", "books", "b", "orbitron-bold", "num_s", "head_s", "fmh3aa", "fmh3bb"]
-  bold-italic: ["bolditalic", "andada_boldit"]

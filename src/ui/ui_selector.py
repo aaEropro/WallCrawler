@@ -133,15 +133,14 @@ class Widget(QWidget):
         self.master_cont.layout().addWidget(self.confirm_button)
 
         # LOAD LAST OPENED FOLDERS
-        if Settings().get('settings', 'use-last-opened'):
-            input_dir = Settings().get('lastopened', 'input_dir')
-            if input_dir != None and os.path.isdir(input_dir):
-                self.input_folder_input.dir_path = input_dir
-                self.input_folder_input.setText(input_dir)
-            output_dir = Settings().get('lastopened', 'output_dir')
-            if output_dir != None and os.path.isdir(os.path.dirname(output_dir)):
-                self.output_folder_input.dir_path = output_dir
-                self.output_folder_input.setText(output_dir)
+        input_dir = Settings().get('input_dir')
+        if input_dir != None and os.path.isdir(input_dir):
+            self.input_folder_input.dir_path = input_dir
+            self.input_folder_input.setText(input_dir)
+        output_dir = Settings().get('output_dir')
+        if output_dir != None and os.path.isdir(os.path.dirname(output_dir)):
+            self.output_folder_input.dir_path = output_dir
+            self.output_folder_input.setText(output_dir)
 
     def pathChange(self, data, tm_id):
         """
@@ -165,8 +164,8 @@ class Widget(QWidget):
         :return: None
         """
         self.confirmed = True
-        Settings().update(self.input_folder_input.text(), 'lastopened', 'input_dir')
-        Settings().update(self.output_folder_input.text(), 'lastopened', 'output_dir')
+        Settings().update(self.input_folder_input.text(), 'input_dir')
+        Settings().update(self.output_folder_input.text(), 'output_dir')
         self.close_signal()
 
 
