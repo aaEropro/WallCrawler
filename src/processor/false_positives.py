@@ -22,6 +22,24 @@ def _decide_correct(line: str, false_positives: list) -> str:
     return " ".join(words_list)
 
 
+def _smart_split(content: str, sep: list[str]) -> list[str]:
+    strings = list()
+    last_index = 0
+
+    for current_index, char in enumerate(content[:-1]):
+        if char in sep:
+            portion = content[last_index:current_index]
+            if portion:
+                strings.append(portion)
+            last_index = current_index+1
+
+    portion = content[last_index:]
+    if portion:
+        strings.append(portion)
+
+    return strings
+
+
 def ignore_false_positives(content: str) -> str:
     lines_list = content.split("\n\n")
     processed_lines = list()
@@ -33,15 +51,23 @@ def ignore_false_positives(content: str) -> str:
         return content
 
     for line in lines_list:
-        line = _decide_correct(line, false_positives)
-        processed_lines.append(line)
+        sentences = line.split(". ")
+        processed_sentences = list()
+
+        # print(sentences)
+
+        for sentence in sentences:
+            sentence = _decide_correct(sentence, false_positives)
+            processed_sentences.append(sentence)
+
+        # print(processed_sentences)
+
+        processed_lines.append(". ".join(processed_sentences))
 
     return "\n\n".join(processed_lines)
 
 
 if __name__ == "__main__":
-    text = """she made steady. Teresa must have thought.
-
-A pair stone."""
+    text = """she made steady. Teresa must have thought. A cow."""
 
     print(ignore_false_positives(text))

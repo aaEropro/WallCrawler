@@ -4,7 +4,7 @@ from src.mailman.settings import Settings
 
 
 def _replace_tags(tag, italic_classes: list, bold_classes: list, bolditalic_classes: list) -> bool:
-    print(tag.name)
+    # print(tag.name)
     for item in italic_classes:
         if item == tag.name or ("class" in tag.attrs and item == tag["class"]):
             tag.replace_with(f"*{tag.get_text()}*")

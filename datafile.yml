@@ -23,6 +23,8 @@ false-positives:
   ignore:
     - "the"
     - "a"
+    - "it"
+    - "and"
 
 
 markers:
