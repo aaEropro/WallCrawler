@@ -2,13 +2,17 @@ input-dir: "input"                # where are the source files
 output-dir: "output"              # where the processed files will be placed
 export-intermediate: True         # export files after removing html tags; works only with `epub` mode
 intermediate-dir: "intermediate"  # used for exporting the unmodified files, with the tags removed
-mode: "epub"                      # `epub` or `txt`; indicate the type of files that will be read
-name-finder-debug: False          # add a special tag at the first occurrence of a detected name
 
-current-stylesheet:       # indicates which tags will be transformed in markdown formatting characters
-  italic: ["italic", "i", "font1"]  # the default tags are "italic" and "i"
-  bold: ["bold", "b", "fm-titlea", "subtitle", "fm-title", "fm-title1", "fm-title2", "chap", "font"]  # the default tags are "bold" and "b"
-  bold-italic: ["bolditalic", "font1"]
+
+current-stylesheet:       # indicates which tags will be transformed in Markdown formatting characters
+  static-italic: ['i', "em"]  # !! please do not edit
+  static-bold: ['b', "strong"]  # !! please do not edit
+  static-bold-italic: []  # !! please do not edit
+
+  italic: []  # add here the italic classes from the .css file in the .epub
+  bold: ["fm-titlea", "subtitle", "fm-title", "fm-title1", "fm-title2", "chap", "font"]  # add here the bold classes from the .css file in the .epub
+  bold-italic: ["font1"]  # add here the bold-italic classes from the .css file in the .epub
+
 
 context-aware:            # detects if the sentence ends after `?` or `!`
   awareness-threshold: 3  # the number of words ahead of the current one that will be checked
@@ -18,6 +22,7 @@ context-aware:            # detects if the sentence ends after `?` or `!`
     - "shouted"
     - "answered"
 
+
 false-positives:
   ignore:
     - "the"
@@ -25,6 +30,7 @@ false-positives:
     - "it"
     - "and"
     - "its"
+
 
 cleaner-replace:
   - ["—", " -- "]
@@ -39,7 +45,3 @@ cleaner-replace:
   # remove redundancy
   - ['..', '.']
   - ['  ', ' ']
-
-cleaner-special-strings: []
-titles: ['Mr', 'Ms', 'Mrs', 'Dr']
-
