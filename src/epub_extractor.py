@@ -1,11 +1,86 @@
 import zipfile
 import os
 import xml.etree.ElementTree as ET
-from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+from src.settings import Settings
+from pathlib import Path
 
 
-def _loadChapterFiles(epub_path: str) -> list[str]:
-    chapter_files = list()
+def _stylesheetParser(stylesheet: str) -> [list[str], list[str]]:
+    stylesheet = stylesheet.strip().strip('}')
+    elements = stylesheet.split('}')
+    italic_elements = list()
+    bold_elements = list()
+
+    for element in elements:
+        # print(element)
+        element = element.strip()
+        parts = element.split('{')
+        if len(parts) < 2:
+            print(f"error, not closed: '{element}'")
+            continue
+
+        head = parts[0].strip()
+        body = parts[1].strip().lower()
+
+        if '@' in head:  # ignore at-ule
+            continue
+
+        if "italic" in body:
+            italic_elements.append(head)
+
+        if "bold" in body:
+            bold_elements.append(head)
+
+    return italic_elements, bold_elements
+
+
+def _replaceTags(tag, italic_classes: list[str], bold_classes: list[str]) -> bool:
+    for item in italic_classes:
+        if item.startswith('.') and "class" in tag.attrs:
+            item = item[1:]
+            if tag["class"] == item:
+                tag.replace_with(f"*{tag.get_text()}*")
+                return True
+        else:
+            if tag.name == item:
+                tag.replace_with(f"*{tag.get_text()}*")
+                return True
+
+    for item in bold_classes:
+        if item.startswith('.') and "class" in tag.attrs:
+            item = item[1:]
+            if tag["class"] == item:
+                tag.replace_with(f"**{tag.get_text()}**")
+                return True
+        else:
+            if tag.name == item:
+                tag.replace_with(f"**{tag.get_text()}*8")
+                return True
+
+
+def _processHtml(contents: str, to_replace: list[list[str]], styles: list[list[str]]) -> str:
+    soup = BeautifulSoup(contents, 'xml')
+
+    for tag in soup.find_all(True):
+        replaced = _replaceTags(tag, styles[0], styles[1])
+        if not replaced:
+            tag.unwrap()
+
+    contents = str(soup)
+
+    for item in to_replace:
+        contents = contents.replace(item[0], item[1])
+
+    return contents
+
+
+def epubExtractor(epub_path: str):
+    files_dump = dict()
+    italic_elements = list()
+    bold_elements = list()
+
+    to_replace = Settings().get("cleaner-replace")
 
     # Check if the file exists
     if not os.path.exists(epub_path):
@@ -13,6 +88,19 @@ def _loadChapterFiles(epub_path: str) -> list[str]:
         return
 
     with zipfile.ZipFile(epub_path, 'r') as epub:
+        for item in epub.namelist():
+            if item.endswith(".css"):
+                with epub.open(item) as f:
+                    stylesheet = f.read().decode('utf-8')
+
+                print(f"processing stylesheet {item}")
+                processed_styles = _stylesheetParser(stylesheet)
+                italic_elements.extend(processed_styles[0])
+                bold_elements.extend(processed_styles[1])
+
+        print("italics:", italic_elements, "\n")
+        print("bolds:", bold_elements, "\n")
+
         # Find and open the content.opf file
         opf_file = None
         for file_name in epub.namelist():
@@ -48,117 +136,17 @@ def _loadChapterFiles(epub_path: str) -> list[str]:
             for chapter in chapters:
                 chapter_path = os.path.join(opf_dir, chapter)
                 chapter_path = chapter_path.replace("\\", "/")  # Ensure correct path format
-                print(chapter_path)
+                print(chapter)
+                chapter = Path(chapter)
                 try:
                     with epub.open(chapter_path) as chapter_file:
                         content = chapter_file.read().decode('utf-8')
-                        # print(f"\nContent of {chapter_path} (first 500 characters):")
-                        # print(content[:500])  # Print the first 500 characters as a preview
-                        chapter_files.append(content)
+                        content = _processHtml(content, to_replace, [italic_elements, bold_elements])
+                        content = content.replace("\n", "\n\n")
+                        content = content.strip()
+                        files_dump[chapter.stem] = content
                 except KeyError as e:
                     print(f"Could not open {chapter_path}: {e}")
+            print(f"total of {len(files_dump.keys())}")
 
-    return chapter_files
-
-
-import zipfile
-import os
-import tinycss2
-
-def _italicClasses(epub_path):
-    # Check if the file exists
-    if not os.path.exists(epub_path):
-        print(f"File {epub_path} does not exist.")
-        return
-
-    italic_classes = []
-
-    with zipfile.ZipFile(epub_path, 'r') as epub:
-        # Find all .css files
-        css_files = [file_name for file_name in epub.namelist() if file_name.endswith('.css')]
-
-        if not css_files:
-            print("No CSS files found in this EPUB.")
-            return
-
-        for css_file in css_files:
-            print(f"Processing {css_file}...")
-            with epub.open(css_file) as f:
-                css_content = f.read().decode('utf-8')
-            rules = tinycss2.parse_stylesheet(css_content, skip_whitespace=True)
-
-            italic_selectors = []
-
-            # Iterate over all the rules
-            for rule in rules:
-                if rule.type == 'qualified-rule':
-                    # Extract the selectors and declarations
-                    selectors = rule.prelude
-                    declarations = rule.content
-
-                    # Check if any declaration contains font-style: italic
-                    for declaration in declarations:
-                        if (declaration.type == 'declaration' and
-                                declaration.name == 'font-style' and
-                                declaration.value == 'italic'):
-                            # Add the selectors to the results
-                            selector_text = ''.join(tinycss2.serialize(s) for s in selectors)
-                            italic_selectors.append(selector_text.strip())
-
-    return italic_selectors
-    #
-    #             # Parse the CSS content
-    #             rules = tinycss2.parse_stylesheet(css_content, skip_whitespace=True)
-    #
-    #             italic_selectors = []
-    #
-    #             # Iterate over all the rules
-    #             for rule in rules:
-    #                 if rule.type == 'qualified-rule':
-    #                     # Extract the selectors and declarations
-    #                     selectors = rule.prelude
-    #                     declarations = rule.content
-    #
-    #                     # Check if any declaration contains font-style: italic
-    #                     for declaration in declarations:
-    #                         if (declaration.type == 'declaration' and
-    #                                 declaration.name == 'font-style' and
-    #                                 declaration.value == 'italic'):
-    #                             # Add the selectors to the results
-    #                             selector_text = ''.join(tinycss2.serialize(s) for s in selectors)
-    #                             italic_selectors.append(selector_text.strip())
-    #
-    # return italic_selectors
-
-                # # Parse the CSS content
-                # rules = tinycss2.parse_stylesheet(css_content, skip_whitespace=True)
-                #
-                # # Look for classes with italic formatting
-                # for rule in rules:
-                #     if rule.type == 'qualified-rule':
-                #         prelude = tinycss2.serialize(rule.prelude).strip()
-                #         content = rule.content
-                #         class_name = None
-                #         for token in rule.prelude:
-                #             if token.type == 'ident' and class_name is None:
-                #                 class_name = f'.{token.value}'
-                #         for decl in content:
-                #             if decl.type == 'declaration' and decl.name == 'font-style':
-                #                 if 'italic' in tinycss2.serialize(decl.value).strip():
-                #                     print(class_name)
-                #                     italic_classes.append(class_name)
-                #                     break
-
-    # return italic_classes
-
-
-def epubExtractor(epub_path: str):
-    chapter_files = _loadChapterFiles(epub_path)
-    italic = _italicClasses(epub_path)
-    print("Classes with italic formatting:")
-    for cls in italic:
-        print(cls)
-
-# Replace with the path to your EPUB file
-epubExtractor(r"C:\Users\jovanni\Desktop\Corey, James SA - The Expanse - 09 - Leviathan Falls.epub")
-
+    return files_dump

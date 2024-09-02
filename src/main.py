@@ -13,6 +13,7 @@ from src.context_aware_punctuation import contextAwarePunctuation
 from src.false_positives_correction import falsePositivesCorrection
 from src.settings import Settings
 from src.epub_files_rectifier import epubFilesRectifier
+from src.epub_extractor import epubExtractor
 
 
 log = logging.getLogger(__name__)
@@ -54,14 +55,15 @@ def run() -> None:
     input_dir = Path(Settings().get("input-dir"))
     output_dir = Path(Settings().get("output-dir"))
 
-    if not input_dir.exists():
-        log.info("aborted during input dir check")
-        sys.exit(1)
+    # if not input_dir.exists():
+    #     log.info("aborted during input dir check")
+    #     sys.exit(1)
     if not _verifyDirExists(output_dir):
         log.info("aborted during output dir check")
         sys.exit(1)
 
-    files_dump = epubFilesRectifier(input_dir)
+    # files_dump = epubFilesRectifier(input_dir)
+    files_dump = epubExtractor(input_dir)
     if files_dump is None:
         sys.exit(1)
 
