@@ -2,6 +2,8 @@ input/*
 intermediate/*
 output/*
 
+tests.py
+
 # PyCharm IDE config
 .idea/
 

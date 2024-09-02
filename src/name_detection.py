@@ -15,10 +15,10 @@ def _traverseWords(words: list[str]) -> set[str]:
         if curr_word[0] in ['"', '“']:  # skip start of speech
             continue
 
-        for item in ['*', '"', '“', '”', "'", "’", "‘", ".", ',', '…', ':', "?", "!"]:
-            curr_word = curr_word.replace(item, "")
+        for item in ['*', '"', '“', '”', "'", ".", ',', '…', ':', "?", "!"]:
+            curr_word = curr_word.replace(item, '')
         for item in ['*', ',', '"', '“', '”', "'", "‘", "’"]:
-            prev_word = prev_word.replace(item, "")
+            prev_word = prev_word.replace(item, '')
 
         if len(curr_word) == 0:  # skip 0-length words
             continue
@@ -27,7 +27,7 @@ def _traverseWords(words: list[str]) -> set[str]:
 
         names.add(curr_word)
         if curr_word != 'I' and not curr_word.endswith('s'):
-            names.add(curr_word + 's')
+            names.add(curr_word + '’s')
 
     return names
 
