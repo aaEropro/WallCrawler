@@ -1,4 +1,4 @@
-input-dir: "C:/Users/jovanni/Desktop/Asher, Neal - Rise Of The Jain - 02 - The Warship.epub"                # where are the source files
+input-dir: "D:/VAULT/[05] Billy T/[01] epubs/Asher, Neal - World Walkers.epub"                # where are the source files
 output-dir: "output"              # where the processed files will be placed
 export-intermediate: True         # export files after removing html tags; works only with `epub` mode
 intermediate-dir: "intermediate"  # used for exporting the unmodified files, with the tags removed

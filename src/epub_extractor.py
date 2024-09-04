@@ -23,7 +23,7 @@ def _stylesheetParser(stylesheet: str) -> [list[str], list[str]]:
         head = parts[0].strip()
         body = parts[1].strip().lower()
 
-        if '@' in head:  # ignore at-ule
+        if '@' in head:  # ignore at-rule
             continue
 
         if "italic" in body:
@@ -37,26 +37,24 @@ def _stylesheetParser(stylesheet: str) -> [list[str], list[str]]:
 
 def _replaceTags(tag, italic_classes: list[str], bold_classes: list[str]) -> bool:
     for item in italic_classes:
-        if item.startswith('.') and "class" in tag.attrs:
-            item = item[1:]
-            if tag["class"] == item:
-                tag.replace_with(f"*{tag.get_text()}*")
-                return True
-        else:
-            if tag.name == item:
-                tag.replace_with(f"*{tag.get_text()}*")
-                return True
+        components = item.split('.')
+
+        if "class" in tag.attrs and tag["class"] == components[-1]:
+            tag.replace_with(f"*{tag.get_text()}*")
+            return True
+        elif tag.name == components[-1]:
+            tag.replace_with(f"*{tag.get_text()}*")
+            return True
 
     for item in bold_classes:
-        if item.startswith('.') and "class" in tag.attrs:
-            item = item[1:]
-            if tag["class"] == item:
-                tag.replace_with(f"**{tag.get_text()}**")
-                return True
-        else:
-            if tag.name == item:
-                tag.replace_with(f"**{tag.get_text()}*8")
-                return True
+        components = item.split('.')
+
+        if "class" in tag.attrs and tag["class"] == components[-1]:
+            tag.replace_with(f"**{tag.get_text()}**")
+            return True
+        elif tag.name == components[-1]:
+            tag.replace_with(f"**{tag.get_text()}**")
+            return True
 
 
 def _processHtml(contents: str, to_replace: list[list[str]], styles: list[list[str]]) -> str:
@@ -77,8 +75,8 @@ def _processHtml(contents: str, to_replace: list[list[str]], styles: list[list[s
 
 def epubExtractor(epub_path: str):
     files_dump = dict()
-    italic_elements = list()
-    bold_elements = list()
+    italic_elements = list(['i', "em"])
+    bold_elements = list(['b', "strong"])
 
     to_replace = Settings().get("cleaner-replace")
 
