@@ -1,4 +1,4 @@
-from src.settings import Settings
+from settings import Settings
 
 
 def _inList(word: str) -> bool:

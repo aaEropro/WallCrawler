@@ -1,4 +1,4 @@
-from src.settings import Settings
+from settings import Settings
 
 
 def _decideCorrect(words: list[str], false_positives: list[str]) -> list[str]:
@@ -33,7 +33,7 @@ def _decideCorrect(words: list[str], false_positives: list[str]) -> list[str]:
 
 
 def falsePositivesCorrection(content: str) -> str:
-    false_positives = Settings().get("false-positives", "ignore")
+    false_positives = Settings().get("false-positives", "ignore-terms")
     if not false_positives:
         print("WARNING: no false positives list.")
         return content

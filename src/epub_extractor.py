@@ -2,7 +2,7 @@ import zipfile
 import os
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
-from src.settings import Settings
+from settings import Settings
 from pathlib import Path
 
 
