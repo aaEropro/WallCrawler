@@ -2,7 +2,7 @@ input/*
 intermediate/*
 output/*
 
-tests.py
+src/tests.py
 
 # PyCharm IDE config
 .idea/
