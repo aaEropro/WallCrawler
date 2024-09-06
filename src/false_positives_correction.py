@@ -7,6 +7,13 @@ def _decideCorrect(words: list[str], false_positives: list[str]) -> list[str]:
     if list_length < 3:
         return words
 
+    if not words[0].islower() and words[1].islower():  # special case for the first word
+        first_word = words[0]
+        for item in ['*', ',', '"', '“', '”', "'", '’']:
+            first_word = first_word.replace(item, '')
+        if first_word.lower() in false_positives:
+            words[0] = words[0].lower()
+
     for index in range(1, list_length - 1):
         prev_word = words[index - 1]
         curr_word = words[index]

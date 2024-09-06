@@ -29,13 +29,14 @@ def run(parameters: dict) -> None:
         log.error(f"the provided input file is not an EPUB")
         sys.exit(1)
 
-    if parameters["intermediate"] is not None and parameters["intermediate"].exists():
-        log.warning("intermediate directory exists; contents have been deleted")
-        shutil.rmtree(parameters["intermediate"])
-        os.mkdir(parameters["intermediate"])
-    else:
-        os.mkdir(parameters["intermediate"])
-        log.info(f"created directory {parameters['intermediate']}")
+    if parameters["intermediate"] is not None:
+        if parameters["intermediate"].exists():
+            log.warning("intermediate directory exists; contents have been deleted")
+            shutil.rmtree(parameters["intermediate"])
+            os.mkdir(parameters["intermediate"])
+        else:
+            os.mkdir(parameters["intermediate"])
+            log.info(f"created directory {parameters['intermediate']}")
 
     if parameters["output"] is None:
         log.error("no output path provided")
