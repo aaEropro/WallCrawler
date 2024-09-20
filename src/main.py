@@ -13,6 +13,7 @@ from context_aware_punctuation import contextAwarePunctuation
 from false_positives_correction import falsePositivesCorrection
 from settings import Settings
 from epub_extractor import epubExtractor
+from uk2us import UK2US
 
 
 log = logging.getLogger(__name__)
@@ -56,16 +57,19 @@ def run(parameters: dict) -> None:
         sys.exit(1)
 
     for file_name in files_dump.keys():
-        content = files_dump[file_name]
+        content: str = files_dump[file_name]
 
         if parameters["intermediate"]:
             with open(Path(parameters["intermediate"], file_name + ".md"), mode="wt", encoding="utf8") as f:
                 f.write(content)
 
+        if Settings().get("modules", "uk2us"):
+            content: str = UK2US(content)
+
         names: list[str] = nameDetection(content)
         content: str = contentRefactoring(content, names)
-        content: str = falsePositivesCorrection(content)
         content: str = contextAwarePunctuation(content)
+        content: str = falsePositivesCorrection(content)
 
         with open(Path(parameters["output"], file_name + ".md"), mode="wt", encoding="utf8") as f:
             f.write(content)

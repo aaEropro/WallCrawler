@@ -1,3 +1,6 @@
+modules:        # enable or disable different modules
+  uk2us: True
+
 context-aware:              # detects if the sentence ends after `?` or `!`
   awareness-threshold: 3    # the number of words ahead of the current one that will be checked
   target-terms:             # terms that indicated the current sentence continues
@@ -19,8 +22,8 @@ false-positives:
 
 
 cleaner-replace:
-  - ["’", "”"]
-  - ["‘", "“"]
+#  - ["’", "”"]
+#  - ["‘", "“"]
   - ["—", " -- "]
   - ["-- ”", "--.”"]
   - [". . . .", "…."]
