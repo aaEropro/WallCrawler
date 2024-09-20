@@ -118,6 +118,7 @@ def _getChapterPaths(epub: zipfile.ZipFile) -> list[PurePosixPath]:
 def epubExtractor(epub_path: Path):
     files_dump = dict()
     to_replace = Settings().get("cleaner-replace")
+    content = str()
 
     epub = zipfile.ZipFile(epub_path, mode='r')
 
@@ -127,12 +128,22 @@ def epubExtractor(epub_path: Path):
     for chapter in chapters:
         try:
             with epub.open(str(chapter)) as chapter_file:
-                content = chapter_file.read().decode('utf-8')
+                content: str = chapter_file.read().decode('utf-8')
         except KeyError as e:
             log.error(f"Could not open {chapter}: {e}")
 
-        content = _processHtml(content, to_replace, classes)
-        content = content.replace("\n", "\n\n")
+        if Settings().get("epub-extractor", "recover-short-lines"):
+            content = content.replace("\n\n", "&234")
+            content = content.replace("\n", ' ')
+            content = content.replace("&234", "\n")
+
+        if content:
+            content = _processHtml(content, to_replace, classes)
+            content = content.replace("\n", "\n\n")
+        else:
+            log.error(f"Missing content")
+            sys.exit(1)
+
         files_dump[chapter.stem] = content.strip()
 
     log.info(f"Read a total of {len(files_dump.keys())} splits")
