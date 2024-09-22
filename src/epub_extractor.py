@@ -88,8 +88,7 @@ def _getChapterPaths(epub: zipfile.ZipFile) -> list[PurePosixPath]:
     opf_file = None
 
     for file_name in epub.namelist():
-        lowered = file_name.lower()
-        if lowered.endswith("content.opf"):
+        if file_name.lower().endswith(".opf"):
             opf_file = file_name
             break
 
