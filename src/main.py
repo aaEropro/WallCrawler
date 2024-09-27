@@ -32,12 +32,10 @@ def run(parameters: dict) -> None:
 
     if parameters["intermediate"] is not None:
         if parameters["intermediate"].exists():
-            log.warning("intermediate directory exists; contents have been deleted")
-            shutil.rmtree(parameters["intermediate"])
-            os.mkdir(parameters["intermediate"])
+            log.info("using existing intermediate directory")
         else:
             os.mkdir(parameters["intermediate"])
-            log.info(f"created directory {parameters['intermediate']}")
+            log.info(f"created intermediate directory {parameters['intermediate']}")
 
     if parameters["output"] is None:
         log.error("no output path provided")
