@@ -60,14 +60,17 @@ def _getClasses(epub: zipfile.ZipFile):
 def _replaceTag(tag, css_info: list[str], replace_with: str) -> bool:
     for item in css_info:
         blocks = item.split('.')
+        recover_paragraphs = Settings().get("epub-extractor", "recover-paragraphs")
         if "class" in tag.attrs:
             if len(blocks) > 1 and tag["class"] == blocks[1]:
                 tag.replace_with(f"{replace_with}{tag.get_text()}{replace_with}")
                 return True
-        else:
-            if tag.name == blocks[0]:
+        elif tag.name == blocks[0]:
                 tag.replace_with(f"{replace_with}{tag.get_text()}{replace_with}")
                 return True
+        elif tag.name == 'p' and recover_paragraphs:
+            tag.replace_with(f"{tag.get_text()}\n")
+            return True
 
 
 def _processHtml(contents: str, to_replace: list[list[str]], styles: list[list[str]]) -> str:
