@@ -1,0 +1,37 @@
+modules:        # enable or disable different modules
+  uk2us: False
+
+epub-extractor:
+  recover-short-lines: False
+  recover-paragraphs: False
+  cleaner-replace:          # replacements to be made
+    - ["—", " -- "]
+    - ["-- ”", "--.”"]
+    - [" ", " "]
+    - [" . . . .", "…."]
+    - [' . . .', '…']
+    - ['....', '….']
+    - ['...', '…']
+    - ["… ”", "….”"]
+    - ["…”", "….”"]
+
+context-aware:              # detects if the sentence ends after `?` or `!`
+  awareness-threshold: 3    # the number of words ahead of the current one that will be checked
+  target-terms:             # terms that indicated the current sentence continues
+    - "said"
+    - "asked"
+    - "shouted"
+    - "answered"
+
+
+false-positives:
+  ignore-terms:
+    - "the"
+    - "a"
+    - "it"
+    - "and"
+    - "its"
+    - "how"
+    - "is"
+
+
